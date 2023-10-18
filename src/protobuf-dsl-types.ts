@@ -1,36 +1,38 @@
 
-export declare enum ScalarType {
-    String = "String",
-    Boolean = "Boolean",
-    Int = "Int",
-    Float = "Float",
-    DateTime = "DateTime",
-    Json = "Json"
-}
+export type BaseField = {
+  name: string;
+  isList: boolean;
+  kind: string;
+};
 
-export type Field =  {
-    name: string;
-    type: ScalarType;
-    locNumber: number;
+export type ScalarField = BaseField & {
+  type: string;
+  locNumber: number;
+};
+
+export type ObjectField = BaseField & {
+  type: string;
+  locNumber: number;
 };
 
 export type Message = {
-    name: string;
-    fields:Field[];
+  name: string;
+  fields: Array<ScalarField | ObjectField>;
 };
 
 export type Schema = {
-    service: Service;
-    messages: Message[];
+  name: string;
+  service: Service;
+  messages: Message[];
 };
 
 export type Service = {
-    name:string;
-    methods: Method[];
-}
+  name: string;
+  methods: Method[];
+};
 
 export type Method = {
-    name:string;
-    inputObjectName: string; 
-    outputObjectName: string; 
-}
+  name: string;
+  inputObjectName: string;
+  outputObjectName: string;
+};

@@ -1,6 +1,6 @@
 {
   "name": "protobuf-dsl",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1-beta.20",
   "description": "JavaScript interface for protobuf DSL",
   "main": "dist/index.js",
   "scripts": {

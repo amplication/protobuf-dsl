@@ -1,10 +1,21 @@
-import { Message, Method, Schema, Service } from "./protobuf-dsl-types";
+import {
+  Message,
+  Method,
+  ObjectField,
+  ScalarField,
+  Schema,
+  Service,
+} from "./protobuf-dsl-types";
+
+const REPEATED = "repeated";
 
 export async function print(schema: Schema): Promise<string> {
   const statements = [];
-  const head = `syntax = "proto3"\n;
-                 package auth;`;
+  const head = `syntax = "proto3";\n
+                 package ${schema.name};`;
+
   statements.push(head);
+
 
   const service = printService(schema.service);
 
@@ -26,11 +37,11 @@ export function printService(service: Service): string {
     .map((method) => printMethod(method))
     .join("\n");
 
-  return `service ${service.name} {\n ${methodTexts}}`;
+  return `service ${service.name} {\n ${methodTexts} \n }`;
 }
 
 function printMethod(method: Method): string {
-  return `rcp ${method.name} (${method.inputObjectName}) returns (${method.outputObjectName}) {}`;
+  return `rpc ${method.name} (${method.inputObjectName}) returns (${method.outputObjectName}) {}`;
 }
 
 export function printMessages(messages: Message[]): string {
@@ -43,8 +54,26 @@ export function printMessages(messages: Message[]): string {
 
 function printMessage(message: Message): string {
   const fieldTexts = message.fields
-    .map((field) => `${field.type} ${field.name} = ${field.locNumber};`)
+    .map((field) => printField(field))
     .join("\n");
 
-  return `message ${message.name} {\n${fieldTexts}\n}`;
+  return `message ${message.name} {\n${fieldTexts}\n};`;
+}
+
+function printField(field: ObjectField | ScalarField): string {
+  return field.kind === "scalar"
+    ? printScalarField(field)
+    : printObjectField(field);
+}
+
+function printScalarField(field: ScalarField): string {
+  return field.isList
+    ? `${REPEATED} ${field.type} ${field.name} = ${field.locNumber};`
+    : `${field.type} ${field.name} = ${field.locNumber};`;
+}
+
+function printObjectField(field: ObjectField): string {
+  return field.isList
+    ? `${REPEATED} ${field.type} ${field.name} = ${field.locNumber};`
+    : `${field.type} ${field.name} = ${field.locNumber};`;
 }

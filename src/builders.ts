@@ -1,15 +1,20 @@
 import {
-  Field,
   Message,
   Method,
-  ScalarType,
+  ObjectField,
+  ScalarField,
   Schema,
   Service,
-} from "protobuf-dsl-types";
+} from "./protobuf-dsl-types";
 
 /** Creates a schema  object */
-export function createSchema(service: Service, messages: Message[]): Schema {
+export function createSchema(
+  name: string,
+  service: Service,
+  messages: Message[]
+): Schema {
   return {
+    name,
     service,
     messages,
   };
@@ -39,22 +44,46 @@ export function createMethod(
 }
 
 /**
- * Creates an object field object
+ * Creates a scalar field object
  */
-export function createField(
+export function createScalarField(
   name: string,
-  type: ScalarType,
-  locNumber: number
-): Field {
+  type: string,
+  locNumber: number,
+  isList: boolean
+): ScalarField {
   return {
     name,
     type,
+    kind: "scalar",
     locNumber,
+    isList,
+  };
+}
+
+/**
+ * Creates an object field object
+ */
+export function createObjectField(
+  name: string,
+  type: string,
+  locNumber: number,
+  isList: boolean
+): ObjectField {
+  return {
+    name,
+    type,
+    kind: "object",
+    locNumber,
+    isList,
   };
 }
 
 /** Creates a message object */
-export function createMessage(name: string, fields: Field[]): Message {
+export function createMessage(
+  name: string,
+  fields: Array<ScalarField | ObjectField>
+): Message {
   return {
     name,
     fields,
